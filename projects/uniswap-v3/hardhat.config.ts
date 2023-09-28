@@ -1,5 +1,5 @@
-import { HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-toolbox";
+import CONFIG from "./config/mainet-fork.json";
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -8,13 +8,9 @@ const DEPLOY = process.env.DEPLOY!;
 export default {
   networks: {
     hardhat: {
-      // forking: {
-      //   url: "https://bscrpc.com",
-      //   blockNumber: 31008130,
-      // },
       forking: {
-        url: "https://arbitrum-one.publicnode.com",
-        blockNumber: 123148364,
+        url: "https://rpc.ankr.com/eth",
+        blockNumber: CONFIG.BLOCKNUMBER,
       },
     },
 

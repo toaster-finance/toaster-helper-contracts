@@ -1,11 +1,9 @@
 import { ethers } from "hardhat";
 import {
   INonfungiblePositionManager,
-  IQuoterV2,
-  ISwapRouter,
-  ISwapRouter02,
   IUniswapV3Pool,
   IWETH9,
+  V3SwapRouter,
 } from "../../typechain-types";
 
 const setting = async (
@@ -29,8 +27,8 @@ const setting = async (
   const WETH: IWETH9 = await ethers.getContractAt("IWETH9", _weth);
 
   //Set SwapRouter
-  const SwapRouter: ISwapRouter02 = await ethers.getContractAt(
-    "ISwapRouter02",
+  const SwapRouter: V3SwapRouter = await ethers.getContractAt(
+    "V3SwapRouter",
     _swapRouter
   );
 

@@ -1,18 +1,19 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
-import ADDRESS from "../config/address-mainnet-fork.json";
+import CONFIG from "../config/mainet-fork.json";
 import { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers";
 import { ContractTransactionReceipt, N } from "ethers";
 import {
+  IApproveAndCall,
   IERC20,
   IUniswapV3Pool,
   IWETH9,
   UniswapV3Menu,
   UniswapV3Toaster,
+  V3SwapRouter,
 } from "../typechain-types";
 import makeWETH from "../scripts/utils/makeWETH";
 import { IUniswapV3Toaster } from "../typechain-types/contracts/core/UniswapV3Toaster";
-import { IApproveAndCall } from "../typechain-types/contracts/interfaces";
 
 const UNISWAPV3_FACTORY = "0x1F98431c8aD98523631AE4a59f267346ea31F984";
 const UNISWAPV3_POSITION_MANAGER = "0xC36442b4a4522E871399CD717aBDD847Ab11FE88";
@@ -63,21 +64,21 @@ describe("UniswapV3Toaster", () => {
       .deploy(
         UNISWAPV3_FACTORY,
         UNISWAPV3_POSITION_MANAGER,
-        ADDRESS.WETH,
+        CONFIG.WETH,
         await menu.getAddress()
       )
       .then((tx) => tx.waitForDeployment());
 
-    weth = await ethers.getContractAt("IWETH9", ADDRESS.WETH);
-    matic = await ethers.getContractAt("IERC20", ADDRESS.MATIC);
+    weth = await ethers.getContractAt("IWETH9", CONFIG.WETH);
+    matic = await ethers.getContractAt("IERC20", CONFIG.MATIC);
     await weth.approve(await toaster.getAddress(), ethers.MaxUint256);
     await matic.approve(await toaster.getAddress(), ethers.MaxUint256);
   });
   it("Make WETH & MATIC", async () => {
-    await makeWETH("10", ADDRESS.WETH);
+    await makeWETH("10", CONFIG.WETH);
     await toaster.exactInputSingle({
-      tokenIn: ADDRESS.WETH,
-      tokenOut: ADDRESS.MATIC,
+      tokenIn: CONFIG.WETH,
+      tokenOut: CONFIG.MATIC,
       fee: 3000,
       recipient: signer.address,
       amountIn: ethers.parseEther("5"),
@@ -92,27 +93,27 @@ describe("UniswapV3Toaster", () => {
     expect(
       ethers.formatEther(await matic.balanceOf(signer.address)),
       "MATIC Balance"
-    ).to.be.equal("14379.953430219486109481");
+    ).to.be.equal("13982.71965155550334233");
   });
 
   it("1️⃣ Swap WETH, Supply WETH from lack of ETH:Multicall UniswapV3Toaster with 100 MATIC & 1 WETH & 1ETH    ", async () => {
     const toasterItf = toaster.interface;
     const amount0 = ethers.parseEther("100"); // MATIC
-    const token0 = ADDRESS.MATIC;
+    const token0 = CONFIG.MATIC;
     const amount1 = ethers.parseEther("1"); // WETH
-    const token1 = ADDRESS.WETH;
-    const weth = await ethers.getContractAt("IERC20", ADDRESS.WETH);
-    const matic = await ethers.getContractAt("IERC20", ADDRESS.MATIC);
+    const token1 = CONFIG.WETH;
+    const weth = await ethers.getContractAt("IERC20", CONFIG.WETH);
+    const matic = await ethers.getContractAt("IERC20", CONFIG.MATIC);
     await weth.approve(await toaster.getAddress(), ethers.MaxUint256);
     await matic.approve(await toaster.getAddress(), ethers.MaxUint256);
     const nativeInputAmount = ethers.parseEther("1");
     const tick = await ethers
-      .getContractAt("IUniswapV3Pool", ADDRESS.POOL_MATIC_WETH)
+      .getContractAt("IUniswapV3Pool", CONFIG.POOL_MATIC_WETH)
       .then((l) => l.slot0())
       .then((slot0) => slot0.tick);
     const [swapAmountIn, swapAmountOut, isSwap0] =
       await menu.getSwapAmountForAddLiquidity({
-        pool: ADDRESS.POOL_MATIC_WETH,
+        pool: CONFIG.POOL_MATIC_WETH,
         tickUpper: 60n * ((tick + 200n) / 60n),
         tickLower: 60n * ((tick - 200n) / 60n),
         amount0: amount0,
@@ -120,7 +121,7 @@ describe("UniswapV3Toaster", () => {
         height: 72,
       });
     expect(ethers.formatEther(swapAmountIn)).to.be.equal(
-      "1.084599928065271684"
+      "1.159270313017112405"
     );
     const [tokenIn, tokenOut, amountIn, amountOut] = isSwap0
       ? [token0, token1, amount0, amount1]
@@ -210,21 +211,21 @@ describe("UniswapV3Toaster", () => {
   it("2️⃣ Swap MATIC, No Native Token: Multicall UniswapV3Toaster with 10000 MATIC & 1 WETH ", async () => {
     const toasterItf = toaster.interface;
     const amount0 = ethers.parseEther("10000"); // MATIC
-    const token0 = ADDRESS.MATIC;
+    const token0 = CONFIG.MATIC;
     const amount1 = 0n; // WETH
-    const token1 = ADDRESS.WETH;
-    const weth = await ethers.getContractAt("IERC20", ADDRESS.WETH);
-    const matic = await ethers.getContractAt("IERC20", ADDRESS.MATIC);
+    const token1 = CONFIG.WETH;
+    const weth = await ethers.getContractAt("IERC20", CONFIG.WETH);
+    const matic = await ethers.getContractAt("IERC20", CONFIG.MATIC);
     await weth.approve(await toaster.getAddress(), ethers.MaxUint256);
     await matic.approve(await toaster.getAddress(), ethers.MaxUint256);
     const nativeInputAmount = ethers.parseEther("1");
     const tick = await ethers
-      .getContractAt("IUniswapV3Pool", ADDRESS.POOL_MATIC_WETH)
+      .getContractAt("IUniswapV3Pool", CONFIG.POOL_MATIC_WETH)
       .then((l) => l.slot0())
       .then((slot0) => slot0.tick);
     const [swapAmountIn, swapAmountOut, isSwap0] =
       await menu.getSwapAmountForAddLiquidity({
-        pool: ADDRESS.POOL_MATIC_WETH,
+        pool: CONFIG.POOL_MATIC_WETH,
         tickUpper: 60n * ((tick + 200n) / 60n),
         tickLower: 60n * ((tick - 200n) / 60n),
         amount0: amount0,
@@ -316,21 +317,21 @@ describe("UniswapV3Toaster", () => {
   it("3️⃣ Swap WETH, with Native Coin: Multicall UniswapV3Toaster with 100 MATIC & 1ETH", async () => {
     const toasterItf = toaster.interface;
     const amount0 = ethers.parseEther("100"); // MATIC
-    const token0 = ADDRESS.MATIC;
+    const token0 = CONFIG.MATIC;
     const amount1 = 0n; // WETH
-    const token1 = ADDRESS.WETH;
-    const weth = await ethers.getContractAt("IERC20", ADDRESS.WETH);
-    const matic = await ethers.getContractAt("IERC20", ADDRESS.MATIC);
+    const token1 = CONFIG.WETH;
+    const weth = await ethers.getContractAt("IERC20", CONFIG.WETH);
+    const matic = await ethers.getContractAt("IERC20", CONFIG.MATIC);
     await weth.approve(await toaster.getAddress(), ethers.MaxUint256);
     await matic.approve(await toaster.getAddress(), ethers.MaxUint256);
     const nativeInputAmount = ethers.parseEther("1");
     const tick = await ethers
-      .getContractAt("IUniswapV3Pool", ADDRESS.POOL_MATIC_WETH)
+      .getContractAt("IUniswapV3Pool", CONFIG.POOL_MATIC_WETH)
       .then((l) => l.slot0())
       .then((slot0) => slot0.tick);
     const [swapAmountIn, swapAmountOut, isSwap0] =
       await menu.getSwapAmountForAddLiquidity({
-        pool: ADDRESS.POOL_MATIC_WETH,
+        pool: CONFIG.POOL_MATIC_WETH,
         tickUpper: 60n * ((tick + 200n) / 60n),
         tickLower: 60n * ((tick - 200n) / 60n),
         amount0: amount0,
@@ -421,23 +422,23 @@ describe("UniswapV3Toaster", () => {
   it("4️⃣ Invest only WETH , Swap WETH: Multicall UniswapV3Toaster with 1ETH", async () => {
     const toasterItf = toaster.interface;
     const amount0 = 0n; // MATIC
-    const token0 = ADDRESS.MATIC;
+    const token0 = CONFIG.MATIC;
     const amount1 = ethers.parseEther("0.1"); // WETH
-    const token1 = ADDRESS.WETH;
-    const weth = await ethers.getContractAt("IERC20", ADDRESS.WETH);
-    const matic = await ethers.getContractAt("IERC20", ADDRESS.MATIC);
+    const token1 = CONFIG.WETH;
+    const weth = await ethers.getContractAt("IERC20", CONFIG.WETH);
+    const matic = await ethers.getContractAt("IERC20", CONFIG.MATIC);
     await weth.approve(await toaster.getAddress(), ethers.MaxUint256);
     await matic.approve(await toaster.getAddress(), ethers.MaxUint256);
     const nativeInputAmount = 0n;
     const tick = await ethers
-      .getContractAt("IUniswapV3Pool", ADDRESS.POOL_MATIC_WETH)
+      .getContractAt("IUniswapV3Pool", CONFIG.POOL_MATIC_WETH)
       .then((l) => l.slot0())
       .then((slot0) => slot0.tick);
     const [swapAmountIn, swapAmountOut, isSwap0] =
       await menu.getSwapAmountForAddLiquidity({
-        pool: ADDRESS.POOL_MATIC_WETH,
-        tickUpper: -79500,
-        tickLower: -80100,
+        pool: CONFIG.POOL_MATIC_WETH,
+        tickUpper: 60n * ((tick + 200n) / 60n),
+        tickLower: 60n * ((tick - 200n) / 60n),
         amount0: amount0,
         amount1: amount1 + nativeInputAmount,
         height: 72,
@@ -526,22 +527,22 @@ describe("UniswapV3Toaster", () => {
   it("5️⃣ Invest WETH & MATIC, Swap WETH:Multicall UniswapV3Toaster with 1WETH & 100MATIC", async () => {
     const toasterItf = toaster.interface;
     const amount0 = ethers.parseEther("100"); // MATIC
-    const token0 = ADDRESS.MATIC;
+    const token0 = CONFIG.MATIC;
     const amount1 = ethers.parseEther("1"); // WETH
-    const token1 = ADDRESS.WETH;
+    const token1 = CONFIG.WETH;
     const nativeInputAmount = 0n;
-    const weth = await ethers.getContractAt("IERC20", ADDRESS.WETH);
-    const matic = await ethers.getContractAt("IERC20", ADDRESS.MATIC);
+    const weth = await ethers.getContractAt("IERC20", CONFIG.WETH);
+    const matic = await ethers.getContractAt("IERC20", CONFIG.MATIC);
     await weth.approve(await toaster.getAddress(), ethers.MaxUint256);
     await matic.approve(await toaster.getAddress(), ethers.MaxUint256);
 
     const tick = await ethers
-      .getContractAt("IUniswapV3Pool", ADDRESS.POOL_MATIC_WETH)
+      .getContractAt("IUniswapV3Pool", CONFIG.POOL_MATIC_WETH)
       .then((l) => l.slot0())
       .then((slot0) => slot0.tick);
     const [swapAmountIn, swapAmountOut, isSwap0] =
       await menu.getSwapAmountForAddLiquidity({
-        pool: ADDRESS.POOL_MATIC_WETH,
+        pool: CONFIG.POOL_MATIC_WETH,
         tickUpper: 60n * ((tick + 200n) / 60n),
         tickLower: 60n * ((tick - 200n) / 60n),
         amount0: amount0,
@@ -631,22 +632,22 @@ describe("UniswapV3Toaster", () => {
   it("6️⃣ Invest only MATIC , Swap MATIC: Multicall UniswapV3Toaster with 100MATIC", async () => {
     const toasterItf = toaster.interface;
     const amount0 = ethers.parseEther("100"); // MATIC
-    const token0 = ADDRESS.MATIC;
+    const token0 = CONFIG.MATIC;
     const amount1 = 0n; // WETH
-    const token1 = ADDRESS.WETH;
+    const token1 = CONFIG.WETH;
     const nativeInputAmount = 0n;
-    const weth = await ethers.getContractAt("IERC20", ADDRESS.WETH);
-    const matic = await ethers.getContractAt("IERC20", ADDRESS.MATIC);
+    const weth = await ethers.getContractAt("IERC20", CONFIG.WETH);
+    const matic = await ethers.getContractAt("IERC20", CONFIG.MATIC);
     await weth.approve(await toaster.getAddress(), ethers.MaxUint256);
     await matic.approve(await toaster.getAddress(), ethers.MaxUint256);
 
     const tick = await ethers
-      .getContractAt("IUniswapV3Pool", ADDRESS.POOL_MATIC_WETH)
+      .getContractAt("IUniswapV3Pool", CONFIG.POOL_MATIC_WETH)
       .then((l) => l.slot0())
       .then((slot0) => slot0.tick);
     const [swapAmountIn, swapAmountOut, isSwap0] =
       await menu.getSwapAmountForAddLiquidity({
-        pool: ADDRESS.POOL_MATIC_WETH,
+        pool: CONFIG.POOL_MATIC_WETH,
         tickUpper: 60n * ((tick + 200n) / 60n),
         tickLower: 60n * ((tick - 200n) / 60n),
         amount0: amount0,
@@ -739,8 +740,8 @@ describe("UniswapV3Toaster", () => {
       await weth.deposit({ value: ethers.parseEther(c.randomMax.toString()) });
 
       await toaster.exactInputSingle({
-        tokenIn: ADDRESS.WETH,
-        tokenOut: ADDRESS.MATIC,
+        tokenIn: CONFIG.WETH,
+        tokenOut: CONFIG.MATIC,
         fee: 3000,
         recipient: signer.address,
         amountIn: ethers.parseEther(c.randomAmount.toString()),
@@ -752,21 +753,21 @@ describe("UniswapV3Toaster", () => {
     it(`🧪 Test Case ${c.caseNumber}`, async () => {
       const toasterItf = toaster.interface;
       const amount0 = await matic.balanceOf(signer.address); // MATIC
-      const token0 = ADDRESS.MATIC;
+      const token0 = CONFIG.MATIC;
       const amount1 = await weth.balanceOf(signer.address); // WETH
-      const token1 = ADDRESS.WETH;
+      const token1 = CONFIG.WETH;
 
       await weth.approve(await toaster.getAddress(), ethers.MaxUint256);
       await matic.approve(await toaster.getAddress(), ethers.MaxUint256);
       const nativeInputAmount = c.randomETH;
 
       const tick = await ethers
-        .getContractAt("IUniswapV3Pool", ADDRESS.POOL_MATIC_WETH)
+        .getContractAt("IUniswapV3Pool", CONFIG.POOL_MATIC_WETH)
         .then((l) => l.slot0())
         .then((slot0) => slot0.tick);
       const [swapAmountIn, swapAmountOut, isSwap0] =
         await menu.getSwapAmountForAddLiquidity({
-          pool: ADDRESS.POOL_MATIC_WETH,
+          pool: CONFIG.POOL_MATIC_WETH,
           tickUpper: 60n * ((tick + c.randomUpperTick) / 60n),
           tickLower: 60n * ((tick - c.randomLowerTick) / 60n),
           amount0: amount0,

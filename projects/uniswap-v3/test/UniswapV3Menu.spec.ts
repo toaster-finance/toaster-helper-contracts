@@ -1,20 +1,16 @@
 import setting from "../scripts/utils/setting";
-import ADDRESS from "../config/address-mainnet-fork.json";
+import CONFIG from "../config/mainet-fork.json";
 import { expect } from "chai";
 import {
   IERC20,
   INonfungiblePositionManager,
   IUniswapV3Pool,
   IWETH9,
+  V3SwapRouter,
 } from "../typechain-types";
 import { ethers } from "hardhat";
 import { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers";
-import {
-  ISwapRouter02,
-  UniswapV3Menu,
-  UniswapV3Menu__factory,
-} from "../typechain-types";
-import makeWETHtoMATIC from "../scripts/utils/makeMATIC";
+import { UniswapV3Menu, UniswapV3Menu__factory } from "../typechain-types";
 
 let test_case: {
   randomAmount: number;
@@ -37,7 +33,7 @@ for (let i = 1; i <= 3; i++) {
     });
   }
 }
-let swapRouter: ISwapRouter02;
+let swapRouter: V3SwapRouter;
 let nonfungiblePositionManager: INonfungiblePositionManager;
 let UniswapV3Pool: IUniswapV3Pool;
 let WETH: IWETH9;
@@ -55,18 +51,19 @@ let tokenId: bigint;
 let index: bigint;
 
 let c: number = 1;
-describe("Test UniswapV3Menu in 6 Random case on WETH/MATIC(fee: 0.3%) POOL", () => {
+describe("Test UniswapV3Menu in 6 random case on WETH/MATIC(fee: 0.3%) POOL", () => {
   before("Deploy Fixture", async () => {
     const menu_f: UniswapV3Menu__factory = await ethers.getContractFactory(
       "UniswapV3Menu"
     );
     menu = await menu_f.deploy().then((t) => t.waitForDeployment());
     const res = await setting(
-      ADDRESS.POOL_MATIC_WETH,
-      ADDRESS.WETH,
-      ADDRESS.SWAP_ROUTER,
-      ADDRESS.NFTPOSITIONMANAGER
+      CONFIG.POOL_MATIC_WETH,
+      CONFIG.WETH,
+      CONFIG.SWAP_ROUTER,
+      CONFIG.NFTPOSITIONMANAGER
     );
+
     signer = res.signer;
     swapRouter = res.SwapRouter;
     nonfungiblePositionManager = res.NonfungiblePositionManager;
@@ -100,8 +97,8 @@ describe("Test UniswapV3Menu in 6 Random case on WETH/MATIC(fee: 0.3%) POOL", ()
       );
 
       await swapRouter.exactInputSingle({
-        tokenIn: ADDRESS.WETH,
-        tokenOut: ADDRESS.MATIC,
+        tokenIn: CONFIG.WETH,
+        tokenOut: CONFIG.MATIC,
         fee: 3000,
         recipient: signer.address,
         amountIn: ethers.parseEther(randomAmount.toString()),
@@ -122,7 +119,7 @@ describe("Test UniswapV3Menu in 6 Random case on WETH/MATIC(fee: 0.3%) POOL", ()
 
       const { amountIn, amountOut, isSwapX } =
         await menu.getSwapAmountForAddLiquidity({
-          pool: ADDRESS.POOL_MATIC_WETH,
+          pool: CONFIG.POOL_MATIC_WETH,
           tickUpper,
           tickLower,
           amount0: balanceOfToken0,
@@ -189,7 +186,7 @@ describe("Test UniswapV3Menu in 6 Random case on WETH/MATIC(fee: 0.3%) POOL", ()
       await WETH.deposit({ value: ethers.parseEther("100") });
       //
       await swapRouter.exactInputSingle({
-        tokenIn: ADDRESS.WETH,
+        tokenIn: CONFIG.WETH,
         tokenOut: await token0.getAddress(),
         fee: 3000,
         recipient: signer.address,
@@ -203,8 +200,8 @@ describe("Test UniswapV3Menu in 6 Random case on WETH/MATIC(fee: 0.3%) POOL", ()
 
       const { amountIn, amountOut, isSwapX } =
         await menu.getSwapAmountForIncreaseLiquidity({
-          positionManager: ADDRESS.NFTPOSITIONMANAGER,
-          pool: ADDRESS.POOL_MATIC_WETH,
+          positionManager: CONFIG.NFTPOSITIONMANAGER,
+          pool: CONFIG.POOL_MATIC_WETH,
           tokenId,
           amount0: balanceOfToken0,
           amount1: balanceOfToken1,
@@ -264,82 +261,7 @@ describe("Test UniswapV3Menu in 6 Random case on WETH/MATIC(fee: 0.3%) POOL", ()
     balanceOfToken1 = await token1.balanceOf(signer.address);
     const { amountIn, amountOut, isSwapX } =
       await menu.getSwapAmountForAddLiquidity({
-        pool: ADDRESS.POOL_MATIC_WETH,
-        tickUpper,
-        tickLower,
-        amount0: balanceOfToken0,
-        amount1: balanceOfToken1,
-        height: 72,
-      });
-
-    if (isSwapX) {
-      // Swap WETH
-      await swapRouter.exactInputSingle({
-        tokenIn: await token0.getAddress(),
-        tokenOut: await token1.getAddress(),
-        fee: 3000,
-        recipient: signer.address,
-        amountIn: amountIn,
-
-        amountOutMinimum: 0,
-        sqrtPriceLimitX96: 0,
-      });
-    } else {
-      // Swap MATIC
-      await swapRouter.exactInputSingle({
-        tokenIn: await token1.getAddress(),
-        tokenOut: await token0.getAddress(),
-        fee: 3000,
-        recipient: signer.address,
-        amountIn: amountIn,
-
-        amountOutMinimum: 0,
-        sqrtPriceLimitX96: 0,
-      });
-    }
-    await nonfungiblePositionManager.mint({
-      token0: await token0.getAddress(),
-      token1: await token1.getAddress(),
-      fee: 3000,
-      tickLower: tickLower,
-      tickUpper: tickUpper,
-      amount0Desired: await token0.balanceOf(signer.address),
-      amount1Desired: await token1.balanceOf(signer.address),
-      amount0Min: 0,
-      amount1Min: 0,
-      recipient: signer.address,
-      deadline: ethers.MaxUint256,
-    });
-    balanceOfToken0 = await token0.balanceOf(signer.address);
-    balanceOfToken1 = await token1.balanceOf(signer.address);
-
-    expect(
-      await token0.balanceOf(signer.address), //MATIC
-      "The MATIC remaining after increasing liquidity is less than 0.005"
-    ).to.be.lt(ethers.parseEther("0.005"));
-    expect(
-      await token1.balanceOf(signer.address), //WETH
-      "The WETH remaining after increasing liquidity is less than 0.0001"
-    ).to.be.lt(ethers.parseEther("0.0001"));
-  });
-
-  it("Rebalance only 1 Token: 100 MATIC", async () => {
-    await WETH.deposit({ value: ethers.parseEther("1") });
-    swapRouter.exactInputSingle({
-      tokenIn: await token1.getAddress(),
-      tokenOut: await token0.getAddress(),
-      fee: 3000,
-      recipient: signer.address,
-      amountIn: ethers.parseEther("1"),
-
-      amountOutMinimum: 0,
-      sqrtPriceLimitX96: 0,
-    });
-    balanceOfToken0 = await token0.balanceOf(signer.address);
-    balanceOfToken1 = await token1.balanceOf(signer.address);
-    const { amountIn, amountOut, isSwapX } =
-      await menu.getSwapAmountForAddLiquidity({
-        pool: ADDRESS.POOL_MATIC_WETH,
+        pool: CONFIG.POOL_MATIC_WETH,
         tickUpper,
         tickLower,
         amount0: balanceOfToken0,

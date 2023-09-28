@@ -15,7 +15,6 @@ import "./interfaces/IV3SwapRouter.sol";
 import "./base/PeripheryPaymentsWithFeeExtended.sol";
 import "./base/OracleSlippage.sol";
 import "./libraries/Constants.sol";
-import "hardhat/console.sol";
 
 /// @title Uniswap V3 Swap Router
 /// @notice Router for stateless execution of swaps against Uniswap V3
@@ -40,7 +39,6 @@ abstract contract V3SwapRouter is
         address tokenB,
         uint24 fee
     ) public view returns (IUniswapV3Pool) {
-        console.log(address(factory));
         return
             IUniswapV3Pool(
                 IUniswapV3Factory(factory).getPool(tokenA, tokenB, fee)
