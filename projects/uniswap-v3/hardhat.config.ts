@@ -1,64 +1,10 @@
 import { HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-toolbox";
-import "@openzeppelin/hardhat-upgrades";
 import dotenv from "dotenv";
 dotenv.config();
 
 const DEPLOY = process.env.DEPLOY!;
-const LOW_OPTIMIZER_COMPILER_SETTINGS = {
-  version: "0.7.6",
-  settings: {
-    evmVersion: "istanbul",
-    optimizer: {
-      enabled: true,
-      runs: 2_000,
-    },
-    metadata: {
-      bytecodeHash: "none",
-    },
-  },
-};
 
-const LOWEST_OPTIMIZER_COMPILER_SETTINGS = {
-  version: "0.7.6",
-  settings: {
-    evmVersion: "istanbul",
-    optimizer: {
-      enabled: true,
-      runs: 1_000,
-    },
-    metadata: {
-      bytecodeHash: "none",
-    },
-  },
-};
-const VIA_IR_COMPILER_SETTINGS = {
-  version: "0.7.6",
-  settings: {
-    viaIR: true,
-    evmVersion: "istanbul",
-    optimizer: {
-      enabled: true,
-      runs: 1_000,
-    },
-    metadata: {
-      bytecodeHash: "none",
-    },
-  },
-};
-const DEFAULT_COMPILER_SETTINGS = {
-  version: "0.7.6",
-  settings: {
-    evmVersion: "istanbul",
-    optimizer: {
-      enabled: true,
-      runs: 4_000_000,
-    },
-    metadata: {
-      bytecodeHash: "none",
-    },
-  },
-};
 export default {
   networks: {
     hardhat: {

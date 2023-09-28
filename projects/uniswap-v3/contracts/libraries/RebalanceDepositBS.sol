@@ -5,11 +5,10 @@ import "@uniswap/v3-core/contracts/libraries/TickMath.sol";
 import "@uniswap/v3-core/contracts/libraries/LiquidityMath.sol";
 import "@uniswap/v3-periphery/contracts/interfaces/INonfungiblePositionManager.sol";
 import "@uniswap/v3-periphery/contracts/libraries/LiquidityAmounts.sol";
-
-import "./ToasterLibraryForUniV3.sol";
+import "../external/libraries/UniswapV3Library.sol";
 
 library RebalanceDepositBS {
-    using ToasterLibraryForUniV3 for IUniswapV3Pool;
+    using UniswapV3Library for IUniswapV3Pool;
     using LowGasSafeMath for uint256;
     using LowGasSafeMath for int256;
     using SafeCast for uint256;
@@ -336,7 +335,7 @@ library RebalanceDepositBS {
                 step.amountIn,
                 step.amountOut,
                 step.feeAmount
-            ) = ToasterLibraryForUniV3.computeSwapStep(
+            ) = UniswapV3Library.computeSwapStep(
                 params.sqrtPriceX96,
                 step.sqrtPriceNextX96,
                 params.liquidity,

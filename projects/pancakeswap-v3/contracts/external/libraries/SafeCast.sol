@@ -3,7 +3,7 @@ pragma solidity >=0.5.0;
 
 /// @title Safe casting methods
 /// @notice Contains methods for safely casting between types
-library SafeCastForToaster {
+library SafeCast {
     /// @notice Cast a uint256 to a uint160, revert on overflow
     /// @param y The uint256 to be downcasted
     /// @return z The downcasted integer, now type uint160

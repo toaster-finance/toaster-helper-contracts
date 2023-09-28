@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: SEE LICENSE IN LICENSE
 pragma solidity >=0.5.0;
-import "@pancakeswap/v3-core/contracts/libraries/BitMath.sol";
-import "@pancakeswap/v3-core/contracts/interfaces/IPancakeV3Pool.sol";
-import "@pancakeswap/v3-core/contracts/libraries/FullMath.sol";
-import "@pancakeswap/v3-core/contracts/libraries/SqrtPriceMath.sol";
+import "@uniswap/v3-core/contracts/libraries/BitMath.sol";
+import "@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol";
+import "@uniswap/v3-core/contracts/libraries/FullMath.sol";
+import "@uniswap/v3-core/contracts/libraries/SqrtPriceMath.sol";
 
-library PancakeToasterLibrary {
+library UniswapV3Library {
     /// @notice Computes the position in the mapping where the initialized bit for a tick lives
     /// @param tick The tick for which to compute the position
     /// @return wordPos The key in the mapping containing the word in which the bit is stored
@@ -25,7 +25,7 @@ library PancakeToasterLibrary {
     /// @return next The next initialized or uninitialized tick up to 256 ticks away from the current tick
     /// @return initialized Whether the next tick is initialized, as the function only searches within up to 256 ticks
     function nextInitializedTickWithinOneWord(
-        IPancakeV3Pool pool,
+        IUniswapV3Pool pool,
         int24 tick,
         int24 tickSpacing,
         bool lte
