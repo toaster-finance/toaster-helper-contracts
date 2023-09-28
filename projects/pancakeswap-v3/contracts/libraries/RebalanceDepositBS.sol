@@ -5,10 +5,10 @@ import "@pancakeswap/v3-periphery/contracts/interfaces/INonfungiblePositionManag
 import "@pancakeswap/v3-periphery/contracts/libraries/LiquidityAmounts.sol";
 import "@pancakeswap/v3-core/contracts/libraries/TickMath.sol";
 import "@pancakeswap/v3-core/contracts/libraries/LiquidityMath.sol";
-import "./PancakeToasterLibrary.sol";
+import "../external/libraries/PancakeSwapLibrary.sol";
 
 library RebalanceDepositBS {
-    using PancakeToasterLibrary for IPancakeV3Pool;
+    using PancakeSwapLibrary for IPancakeV3Pool;
     using LowGasSafeMath for uint256;
     using LowGasSafeMath for int256;
     using SafeCast for uint256;
@@ -335,7 +335,7 @@ library RebalanceDepositBS {
                 step.amountIn,
                 step.amountOut,
                 step.feeAmount
-            ) = PancakeToasterLibrary.computeSwapStep(
+            ) = PancakeSwapLibrary.computeSwapStep(
                 params.sqrtPriceX96,
                 step.sqrtPriceNextX96,
                 params.liquidity,
