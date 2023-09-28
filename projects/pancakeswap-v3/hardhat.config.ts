@@ -7,13 +7,9 @@ const DEPLOY = process.env.DEPLOY!;
 export default {
   networks: {
     hardhat: {
-      // forking: {
-      //   url: "https://bscrpc.com",
-      //   blockNumber: 31008130,
-      // },
       forking: {
-        url: "https://arbitrum-one.publicnode.com",
-        blockNumber: 123148364,
+        url: "https://bscrpc.com",
+        blockNumber: 31008130,
       },
     },
 

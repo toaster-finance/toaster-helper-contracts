@@ -1,3 +1,4 @@
+import { expect } from "chai";
 import { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers";
 
 import { ethers } from "hardhat";
@@ -8,7 +9,6 @@ import {
   IApproveAndCall,
   IERC20,
   IPancakeV3Factory,
-  IPancakeV3Pool,
   IWETH9,
   PancakeV3Menu,
   PancakeV3Toaster,
@@ -21,8 +21,6 @@ const PancakeV3_DEPLOYER = ADDRESS.PancakeV3PoolDeployer;
 describe("PancakeV3Toaster", () => {
   let menu: PancakeV3Menu;
   let toaster: PancakeV3Toaster;
-  let newToaster: PancakeV3Toaster;
-  let pool: IPancakeV3Pool;
   let factory: IPancakeV3Factory;
   let signer: HardhatEthersSigner;
   let wbnb: IWETH9;
@@ -70,7 +68,7 @@ describe("PancakeV3Toaster", () => {
     });
   });
 
-  it("Invest only 1WBNB - ERROR CASE", async () => {
+  it("Invest only 1WBNB", async () => {
     const toasterItf = toaster.interface;
     const amount0 = 0n; // USDT
     const token0 = ADDRESS.USDT;
@@ -167,8 +165,19 @@ describe("PancakeV3Toaster", () => {
     }
     const receipt = await toaster["multicall(bytes[])"](multicallData, {
       value: nativeInputAmount,
-    })
-      .then((t) => t.wait())
-      .then((receipt) => receipt as ContractTransactionReceipt);
+    }).then((t) => t.wait());
+
+    expect(receipt!.logs[9].topics[0]).to.equal(V3_MINT_EVENT_SIGNATURE);
+    expect(+receipt!.logs[9].topics[1]).to.equal(
+      0x46a15b0b27311cedf172ab29e4f4766fbe7f4364
+    );
   });
 });
+const V3_SWAP_EVENT_SIGNATURE =
+  "0xc42079f94a6350d7e6235f29174924f928cc2ac818eb64fed8004e115fbcca67";
+const V3_MINT_EVENT_SIGNATURE =
+  "0x7a53080ba414158be7ec69b987b5fb7d07dee101fe85488f0853ae16239d0bde";
+const TRANSFER_EVENT_SIGNATURE =
+  "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef";
+const INCREASE_EVENT_SIGNATURE =
+  "0x3067048beee31b25b2f1681f88dac838c8bba36af25bfb2b7cf7473a5847e35f";
