@@ -23,3 +23,28 @@ A router that makes the Uniswap V3 an easy investment. It calculates the correct
 ---
 
 A router that makes the Pancakeswap V3 an easy investment. It calculates the correct amount of token swaps for your investment and uses PancakeswapV3Toaster.
+
+## UniswapV3 Toaster Deployment Address
+
+**[MAINNET]**
+
+| CHAIN(CHAINID)   | ETHEREUM(1),POLYGON(137),BSC(56),ARBITRUM(42161),OPTIMISM(10) | BASE(8453)                                 |
+| ---------------- | ------------------------------------------------------------- | ------------------------------------------ |
+| UniswapV3Toaster | 0xb8e0cdbad514edc1e8e790f4b6f5f613361802a7                    | 0x1d90546025045056c869a8cf548a38b69082e27a |
+| UniswapV3Menu    | 0xa48719d977e5823a7881ba3d7a49b81673adaebb                    | 0xa48719d977e5823a7881ba3d7a49b81673adaebb |
+
+**[TESTNET]**
+
+| CHAIN(CHAINID)   | GOERLI(5),MUMBAI(80001),BSC_TEST(97)       |
+| ---------------- | ------------------------------------------ |
+| UniswapV3Toaster | 0xb8e0cdbad514edc1e8e790f4b6f5f613361802a7 |
+| UniswapV3Menu    | 0xa48719d977e5823a7881ba3d7a49b81673adaebb |
+
+## PancakeswapV3 Toaster Deployment Address
+
+**[MAINNET]**
+
+| CHAIN(CHAINID)       | BSC(56)                                    | BASE(8453)                                 |
+| -------------------- | ------------------------------------------ | ------------------------------------------ |
+| PancakeswapV3Toaster | 0x14223fb38d9cc73b5e8daff4b36fd8b1c3ff3658 | 0x1d90546025045056c869a8cf548a38b69082e27a |
+| PancakeswapV3Menu    | 0x1d90546025045056c869a8cf548a38b69082e27a | 0xa48719d977e5823a7881ba3d7a49b81673adaebb |
