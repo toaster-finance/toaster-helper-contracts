@@ -46,5 +46,5 @@ A router that makes the Pancakeswap V3 an easy investment. It calculates the cor
 
 | CHAIN(CHAINID)       | BSC(56)                                    | BASE(8453)                                 |
 | -------------------- | ------------------------------------------ | ------------------------------------------ |
-| PancakeswapV3Toaster | 0x14223fb38d9cc73b5e8daff4b36fd8b1c3ff3658 | 0x1d90546025045056c869a8cf548a38b69082e27a |
-| PancakeswapV3Menu    | 0x1d90546025045056c869a8cf548a38b69082e27a | 0xa48719d977e5823a7881ba3d7a49b81673adaebb |
+| PancakeswapV3Toaster | 0x14223fb38d9cc73b5e8daff4b36fd8b1c3ff3658 | 0x6D4589Bb995e339Bc82de062eb8AF832EBEeFC2F |
+| PancakeswapV3Menu    | 0x1d90546025045056c869a8cf548a38b69082e27a | 0xf7aC8A94B225B5EbD8b223d00c7bFbc96a893233 |
