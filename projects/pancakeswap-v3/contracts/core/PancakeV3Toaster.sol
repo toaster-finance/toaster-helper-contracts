@@ -27,7 +27,8 @@ contract PancakeV3Toaster is
     ) ImmutableState(_positionManager) SwapRouter(_deployer, _factory, _WETH9) {
         menu = _menu;
     }
-
+    //COMM: This function(exactInputSingleBySelf) was created separately in the Uniswap contract code. 
+    // To use exactInputInternal, i make exactInputInternal private to internal and call it from here.
     function exactInputSingleBySelf(
         ExactInputBySelfParams memory params
     ) external payable returns (uint256 amountOut) {
@@ -45,7 +46,9 @@ contract PancakeV3Toaster is
             })
         );
     }
-
+    //COMM: getSwapAmountForAddLiquidity , getSwapAmountForIncreaseLiquidity, total, principal, fees are all called from the menu contract.
+    // These functions are called from the menu contract to get the amount of tokens to be swapped.
+    // We don't actually run anything through this function, but we've implemented it as a view function in our contract code for computation.
     function getSwapAmountForAddLiquidity(
         SwapAmountForAddLiquidityParams calldata params
     )
