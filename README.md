@@ -16,13 +16,13 @@ Toaster Contracts help solve these tiring tasks. Once you decide on a price rang
 
 ---
 
-A router that makes the Uniswap V3 an easy investment. It calculates the correct amount of token swaps for your investment and uses UniswapV3Toaster.
+A router that makes the Uniswap V3 an easy investment. UniswapV3 Menu calculates the correct amount of token swaps for your investment and uses UniswapV3Toaster to invest.
 
 ### [PancakeswapV3 Toaster](https://github.com/toaster-finance/toaster-contracts/tree/main/projects/pancakeswap-v3)
 
 ---
 
-A router that makes the Pancakeswap V3 an easy investment. It calculates the correct amount of token swaps for your investment and uses PancakeswapV3Toaster.
+A router that makes the Pancakeswap V3 an easy investment. UniswapV3 Menu calculates the correct amount of token swaps for your investment and uses PancakeswapV3Toaster to invest.
 
 ## UniswapV3 Toaster Deployment Address
 
