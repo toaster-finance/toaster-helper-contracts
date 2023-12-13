@@ -22,7 +22,7 @@ A router that makes the Uniswap V3 an easy investment. UniswapV3 Menu calculates
 
 ---
 
-A router that makes the Pancakeswap V3 an easy investment. UniswapV3 Menu calculates the correct amount of token swaps for your investment and uses PancakeswapV3Toaster to invest.
+A router that makes the Pancakeswap V3 an easy investment. Pancake V3 Menu calculates the correct amount of token swaps for your investment and uses PancakeswapV3Toaster to invest.
 
 ## UniswapV3 Toaster Deployment Address
 
