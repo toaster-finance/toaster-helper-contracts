@@ -99,7 +99,7 @@ contract SwapRouter is
         address recipient,
         uint160 sqrtPriceLimitX96,
         SwapCallbackData memory data
-    ) private returns (uint256 amountOut) {
+    ) internal returns (uint256 amountOut) {
         // allow swapping to the router address with address 0
         if (recipient == address(0)) recipient = address(this);
 

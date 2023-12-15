@@ -88,7 +88,7 @@ abstract contract V3SwapRouter is
         address recipient,
         uint160 sqrtPriceLimitX96,
         SwapCallbackData memory data
-    ) private returns (uint256 amountOut) {
+    ) internal returns (uint256 amountOut) {
         // find and replace recipient addresses
         if (recipient == Constants.MSG_SENDER) recipient = msg.sender;
         else if (recipient == Constants.ADDRESS_THIS) recipient = address(this);
